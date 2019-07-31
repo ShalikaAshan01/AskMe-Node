@@ -1,0 +1,142 @@
+const controller = require('../controllers/QuestionsController');
+var express = require('express');
+var router = express.Router();
+
+router.post('/',(req,res)=>{
+    controller.add(req.headers.authorization,req.body)
+        .then(data=>{
+            res.status(data.status).send({question:data.question})
+        })
+        .catch(err=>{
+            res.status(err.status).send({error:err.error})
+        })
+});
+router.get('/',(req,res)=>{
+    controller.getAll()
+        .then(data=>{
+            res.status(data.status).send({questions:data.questions})
+        })
+        .catch(err=>{
+            res.status(err.status).send({error:err.error})
+        })
+});
+router.patch('/upvote/:id',(req,res)=>{
+    controller.upVote(req.headers.authorization,req.params.id)
+        .then(data=>{
+            res.status(data.status).send({vote:data.vote})
+        })
+        .catch(err=>{
+            res.status(err.status).send({error:err.error})
+        })
+});
+
+router.patch('/downvote/:id',(req,res)=>{
+    controller.downVote(req.headers.authorization,req.params.id)
+        .then(data=>{
+            res.status(data.status).send({vote:data.vote})
+        })
+        .catch(err=>{
+            res.status(err.status).send({error:err.error})
+        })
+});
+router.get('/:question',(req,res)=>{
+    controller.get(req.params.question)
+        .then(data=>{
+            res.status(data.status).send({question:data.question})
+        })
+        .catch(err=>{
+            res.status(err.status).send({error:err.error})
+        })
+});
+router.patch('/views/:question',(req,res)=>{
+    controller.updateView(req.params.question)
+        .then(data=>{
+            res.status(data.status).send({views:data.views})
+        })
+        .catch(err=>{
+            res.status(err.status).send({error:err.error})
+        })
+});
+router.get('/id/:id',(req,res)=>{
+    controller.getByID(req.params.id)
+        .then(data=>{
+            res.status(data.status).send({question:data.question})
+        })
+        .catch(err=>{
+            res.status(err.status).send({error:err.error})
+        })
+});
+router.patch('/follow/:id',(req,res)=>{
+    controller.follow(req.headers.authorization,req.params.id)
+        .then(data=>{
+            res.status(data.status).send({follow:data.follow})
+        })
+        .catch(err=>{
+            res.status(err.status).send({error:err.error})
+        })
+});
+router.patch('/comment/:id',(req,res)=>{
+    controller.addComment(req.headers.authorization,req.params.id,req.body.comment,req.body.anonymous)
+        .then(data=>{
+            res.status(data.status).send({question:data.question})
+        })
+        .catch(err=>{
+            res.status(err.status).send({error:err.error})
+        })
+});
+router.delete('/:id',(req,res)=>{
+    controller.delete(req.headers.authorization,req.params.id)
+        .then(data=>{
+            res.status(data.status).send({question:data.question})
+        })
+        .catch(err=>{
+            res.status(err.status).send({error:err.error})
+        })
+});
+router.put('/:id',(req,res)=>{
+    controller.updateQuestion(req.headers.authorization,req.params.id,req.body)
+        .then(data=>{
+            res.status(data.status).send({question:data.question})
+        })
+        .catch(err=>{
+            res.status(err.status).send({error:err.error})
+        })
+});
+router.get('/search/:keyword',(req,res)=>{
+    controller.search(req.params.keyword)
+        .then(data=>{
+            res.status(data.status).send({questions:data.questions})
+        })
+        .catch(err=>{
+            res.status(err.status).send({error:err.error})
+        })
+});
+router.get('/tag/:tagName',(req,res)=>{
+    controller.getQuestionByTag(req.params.tagName)
+        .then(data=>{
+            res.status(data.status).send({questions:data.questions})
+        })
+        .catch(err=>{
+            res.status(err.status).send({error:err.error})
+        })
+});
+router.get('/asked/:from',(req,res)=>{
+    controller.getQuestionByAskType(req.params.from)
+        .then(data=>{
+            res.status(data.status).send({questions:data.questions})
+        })
+        .catch(err=>{
+            res.status(err.status).send({error:err.error})
+        })
+});
+router.get('/user/:id',(req,res)=>{
+    controller.getQuestionByUserID(req.params.id)
+        .then(data=>{
+            res.status(data.status).send({questions:data.questions})
+        })
+        .catch(err=>{
+            res.status(err.status).send({error:err.error})
+        })
+});
+
+module.exports = router;
