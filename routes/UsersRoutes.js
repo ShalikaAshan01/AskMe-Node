@@ -147,5 +147,13 @@ router.get("/auth/facebook/redirect",
         })(req,res)
     }
 );
-
+router.get("/user/:username",(req,res)=>{
+   UserController.getUserByUsername(req.params.username)
+       .then(data=>{
+           res.status(data.status).send({user:data.user})
+       })
+       .catch(err=>{
+           res.status(err.status).send({error:err.error})
+       })
+});
 module.exports = router;

@@ -80,6 +80,7 @@ AnswerController.add = function(token,qid,answer,anonymous){
 AnswerController.getByQID = function(qid){
   return new Promise((resolve, reject) => {
       answerModel.find({qid:qid})
+          .sort({bestAnswer:-1,"vote.upVote":-1})
           .then(data=>{
               resolve({status:200,answers:data})
           })
@@ -87,6 +88,18 @@ AnswerController.getByQID = function(qid){
               reject({status:500,error:err})
           })
   })
+};
+AnswerController.getByQIDUpdated = function(qid){
+    return new Promise((resolve, reject) => {
+        answerModel.find({qid:qid})
+            .sort({bestAnswer:-1,updated_at:-1})
+            .then(data=>{
+                resolve({status:200,answers:data})
+            })
+            .catch(err=>{
+                reject({status:500,error:err})
+            })
+    })
 };
 
 AnswerController.addComment = function(token,id,comment,anonymous){
@@ -135,7 +148,6 @@ AnswerController.downVote = function (token, qid) {
             //check if question is valid or not
             answerModel.findById(qid)
                 .then(data => {
-                    console.log(data)
                     if (!data)
                         reject({status: 404, error: "Cannot find question"});
                     else {
@@ -370,7 +382,7 @@ AnswerController.getAnswerByUserID=function(id){
     return new Promise((resolve, reject) => {
         answerModel.find({
             "user.userInfo._id":id
-        })
+        }).sort({updated_at: 'desc'})
             .then(data=>{
                 if(data.length!==0)
                     resolve({status:200,answers:data});
@@ -388,7 +400,7 @@ AnswerController.getBestAnswerByUserID=function(id){
         answerModel.find({
             bestAnswer:"true",
             "user.userInfo._id":id
-        })
+        }).sort({updated_at: 'desc'})
             .then(data=>{
                 if(data.length!==0)
                     resolve({status:200,answers:data});

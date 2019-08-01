@@ -20,5 +20,14 @@ router.get('/',(req,res)=>{
             res.status(err.status).send({error:err.error})
         })
 });
+router.delete('/:id',(req,res)=>{
+    controller.delete(req.params.id)
+        .then(data=>{
+            res.status(data.status).send()
+        })
+        .catch(err=>{
+            res.status(err.status).send({error:err.error})
+        })
+});
 
 module.exports = router;

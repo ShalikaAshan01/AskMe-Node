@@ -47,5 +47,32 @@ TagsController.getAll = function(){
             })
     })
 };
+TagsController.delete = function(id){
+    return new Promise((resolve, reject) => {
+        if(token===null || token === undefined)
+            reject({status: 403, error: "Unknown user"});
+        else{
+            token = token.replace('Bearer ','')
+        }
+        let valid = jwt.verify(token,process.env.SECRET);
+        jwt.verify(token, process.env.SECRET, function (err, decoded) {
+            if(err){
+                reject({status:401,error:'Invalid user'})
+            }else{
+                if(data.status.role==="admin"||data.status.role==="moderator") {
 
+                    tagModel.findByIdAndDelete(id)
+                        .then(() => {
+                            resolve({status: 201})
+                        })
+                        .catch(err => {
+                            reject({status: 500, error: err})
+                        })
+                }else{
+                    reject({status: 401, error: err})
+                }
+            }
+        });
+    })
+};
 module.exports = TagsController;

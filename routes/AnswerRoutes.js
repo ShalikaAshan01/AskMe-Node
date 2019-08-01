@@ -20,6 +20,15 @@ router.get('/qid/:qid',(req,res)=>{
             res.status(err.status).send({error:err.error})
         })
 });
+router.get('/updated/:qid',(req,res)=>{
+    controller.getByQIDUpdated(req.params.qid)
+        .then(data=>{
+            res.status(data.status).send({answers:data.answers})
+        })
+        .catch(err=>{
+            res.status(err.status).send({error:err.error})
+        })
+});
 
 router.patch('/comment/:id',(req,res)=>{
     controller.addComment(req.headers.authorization,req.params.id,req.body.comment,req.body.anonymous)

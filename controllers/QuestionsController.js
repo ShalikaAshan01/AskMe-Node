@@ -2,6 +2,7 @@ var moment = require('moment');
 var questionModel = require('../models/QuestionsModel');
 var answerModel = require('../models/AnswerModel');
 var jwt = require('jsonwebtoken');
+var ObjectId = require('mongoose').Types.ObjectId;
 
 var QuestionController = function () {
 };
@@ -32,7 +33,7 @@ QuestionController.add = function (token, data) {
 };
 QuestionController.getAll = function () {
     return new Promise((resolve, reject) => {
-        questionModel.find({})
+        questionModel.find({}).sort({updated_at: 'desc'})
             .then(data => {
                 resolve({status: 200, questions: data})
             })
@@ -179,8 +180,15 @@ QuestionController.downVote = function (token, qid) {
 
 QuestionController.get = function (question) {
     return new Promise((resolve, reject) => {
-        question += "?";
-        questionModel.findOne({question: question})
+
+        let find={};
+        if(ObjectId.isValid(question))
+            find = {_id:question};
+        else
+            find = {question:question+"?"};
+        questionModel.findOne(
+            find
+            )
             .then(data => {
                 if (data === null)
                     reject({status: 404, error: "Cannot find"});
@@ -197,7 +205,7 @@ QuestionController.updateView = function (question) {
         questionModel.findOne({question: question})
             .then(data => {
                 if (data) {
-                    questionModel.findOneAndUpdate(data._id, {views: data.views + 1})
+                    questionModel.findByIdAndUpdate(data._id, {views: data.views + 1})
                         .then(data => {
                             resolve({status: 200, views: data.views + 1})
                         })
@@ -381,7 +389,7 @@ QuestionController.search = function(text){
         let regex = new RegExp(text, 'i');
         questionModel.find({
             question: regex
-        }).then(data=>{
+        }).sort({updated_at: 'desc'}).then(data=>{
             resolve({status:200,questions:data})
         })
             .catch(err=>{
@@ -397,7 +405,7 @@ QuestionController.getQuestionByTag = function(tagName){
             tags: {
                 $elemMatch: { "0.name": tagName }
             }
-        })
+        }).sort({updated_at: 'desc'})
             .then(data=>{
                 if(data.length!==0)
                     resolve({status:200,questions:data});
@@ -411,7 +419,7 @@ QuestionController.getQuestionByTag = function(tagName){
 };
 QuestionController.getQuestionByAskType=function(from){
     return new Promise((resolve, reject) => {
-        questionModel.find({askedFrom:from})
+        questionModel.find({askedFrom:from}).sort({updated_at: 'desc'})
             .then(data=>{
                 if(data.length!==0)
                     resolve({status:200,questions:data});
@@ -428,7 +436,7 @@ QuestionController.getQuestionByUserID=function(id){
     return new Promise((resolve, reject) => {
         questionModel.find({
             "user.userInfo.id":id
-        })
+        }).sort({updated_at: 'desc'})
             .then(data=>{
                 if(data.length!==0)
                     resolve({status:200,questions:data});

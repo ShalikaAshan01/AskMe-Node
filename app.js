@@ -5,7 +5,6 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var sassMiddleware = require('node-sass-middleware');
 var cors = require('cors');
-var cowsay = require("cowsay");
 const mongoose = require('mongoose');
 const fetchBg = require('./controllers/backgroundController');
 const passportSetup = require('./config/passport-setup');

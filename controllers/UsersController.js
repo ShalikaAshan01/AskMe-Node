@@ -168,7 +168,6 @@ function sendForgottenPasswordEmail(email,lastName,hash,shortID) {
     mailer(from,to,subject,text,html,username,password);
 }
 
-
 UsersController.resendCode = function(_id){
     return new Promise((resolve, reject) => {
         usersModel.findById(_id)
@@ -451,6 +450,29 @@ UsersController.authCheck=function(email){
             })
             .catch(err=>{
                 reject({status: 500, error: err});
+            })
+    })
+};
+UsersController.getUserByUsername = function(username){
+    return new Promise((resolve, reject) => {
+        usersModel.findOne({username:username})
+            .then(data=>{
+                if(data){
+                    let obj = {
+                        _id:data._id,
+                        firstName:data.firstName,
+                        lastName:data.lastName,
+                        username:data.username,
+                        email:data.email,
+                        gender:data.gender
+                    };
+                    resolve({status:200,user:obj});
+                }
+                else
+                    reject({status:404,error:"Cannot find user"});
+            })
+            .catch(err=>{
+                reject({status:500,error:err});
             })
     })
 };
