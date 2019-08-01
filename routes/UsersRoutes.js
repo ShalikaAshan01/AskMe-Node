@@ -1,7 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var UserController = require('../controllers/UsersController');
-
+const passport = require('passport');
+const jwt = require('jsonwebtoken');
 /* GET users listing. */
 router.get('/',function(req, res) {
   res.send('respond with a resource');
@@ -94,8 +95,8 @@ router.put('/:id',(req,res)=>{
             res.status(err.status).send({error:err.error})
         })
 });
-router.post('/auth/facebook',(req,res)=>{
-    UserController.facebook(req.body)
+router.post('/auth/signUp',(req,res)=>{
+    UserController.authSignup(req.body)
         .then(data=>{
             res.status(data.status).send({token:data.token});
         })
@@ -103,5 +104,48 @@ router.post('/auth/facebook',(req,res)=>{
             res.status(err.status).send({error:err.error})
         })
 });
+router.get('/auth/google',
+    passport.authenticate('google',{
+        scope: ['openid', 'email', 'profile']
+    })
+);
+router.get("/auth/google/redirect",
+    (req,res)=>{
+        passport.authenticate("google", {
+            successRedirect: process.env.URL,
+            failureRedirect: "/auth/login/failed"
+        },function (error, user) {
+
+            let token = jwt.sign(user, process.env.SECRET);
+            res.redirect(process.env.URL+"/0auth/continue/"+token);
+
+        })(req,res)
+    }
+);
+router.post('/auth/check/:email',(req,res)=>{
+   UserController.authCheck(req.params.email)
+       .then(data=>{
+           res.status(data.status).send({token:data.token});
+       })
+       .catch(err=>{
+           res.status(err.status).send({error:err.error})
+       })
+});
+//facebook
+router.get('/auth/facebook',
+    passport.authenticate('facebook',{ scope : ['email'] })
+);
+router.get("/auth/facebook/redirect",
+    (req,res)=>{
+        passport.authenticate("facebook", {
+            successRedirect: process.env.URL,
+            failureRedirect: "/auth/login/failed"
+        },function (error, user) {
+
+            let token = jwt.sign(user, process.env.SECRET);
+            res.redirect(process.env.URL+"/0auth/continue/"+token);
+        })(req,res)
+    }
+);
 
 module.exports = router;

@@ -393,7 +393,7 @@ UsersController.updateProfile = function(id,token,data){
         })
     })
 };
-UsersController.facebook=function(user){
+UsersController.authSignup=function(user){
     return new Promise((resolve, reject) => {
         let data = {
             firstName:user.firstName,
@@ -422,6 +422,32 @@ UsersController.facebook=function(user){
                 };
                 let token = jwt.sign(obj, process.env.SECRET, {expiresIn: tokenExp});
                 resolve({status:201,token:token})
+            })
+            .catch(err=>{
+                reject({status: 500, error: err});
+            })
+    })
+};
+UsersController.authCheck=function(email){
+    return new Promise((resolve, reject) => {
+        usersModel.findOne({email:email})
+            .then(data=>{
+                console.log(data)
+                if(data===null){
+                    reject({status: 404, error: "Cannot find user details"});
+                }else{
+                    let obj = {
+                        _id:data._id,
+                        firstName:data.firstName,
+                        lastName:data.lastName,
+                        username:data.username,
+                        email:data.email,
+                        gender:data.gender,
+                        status:data.status
+                    };
+                    let token = jwt.sign(obj, process.env.SECRET, {expiresIn: tokenExp});
+                    resolve({status:201,token:token})
+                }
             })
             .catch(err=>{
                 reject({status: 500, error: err});

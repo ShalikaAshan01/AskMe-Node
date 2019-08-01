@@ -8,7 +8,8 @@ var cors = require('cors');
 var cowsay = require("cowsay");
 const mongoose = require('mongoose');
 const fetchBg = require('./controllers/backgroundController');
-
+const passportSetup = require('./config/passport-setup');
+const passport = require('passport');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/UsersRoutes');
 var backgroundRouter = require('./routes/ImagesRoute');
@@ -53,6 +54,10 @@ app.use(sassMiddleware({
 
 app.use(express.static(path.join(__dirname, 'public')));
 
+// initalize passport
+app.use(passport.initialize());
+// deserialize cookie from the browser
+app.use(passport.session());
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/background', backgroundRouter);
