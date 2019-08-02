@@ -12,7 +12,7 @@ const facebook={
     //    option
     clientID:"715136948949733",
     clientSecret:"34c90a0a81d838b82fad835a31ddcccc",
-    callbackURL:"/users/auth/facebook/redirect",
+    callbackURL:"https://askme-248409.appspot.com/users/auth/facebook/redirect",
     profileFields: ['id', 'emails', 'name']
 };
 
