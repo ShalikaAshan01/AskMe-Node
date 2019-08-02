@@ -11,12 +11,11 @@ TagsController.add = function(tag,token){
         else{
             token = token.replace('Bearer ','')
         }
-        let valid = jwt.verify(token,process.env.SECRET);
         jwt.verify(token, process.env.SECRET, function (err, decoded) {
            if(err){
                reject({status:401,error:'Invalid user'})
            }else{
-               if(data.status.role==="admin"||data.status.role==="moderator") {
+               if(decoded.status.role==="admin"||decoded.status.role==="moderator") {
                    let data = {
                        name: tag.name,
                        created_at: moment().format(),
@@ -54,12 +53,11 @@ TagsController.delete = function(id){
         else{
             token = token.replace('Bearer ','')
         }
-        let valid = jwt.verify(token,process.env.SECRET);
         jwt.verify(token, process.env.SECRET, function (err, decoded) {
             if(err){
                 reject({status:401,error:'Invalid user'})
             }else{
-                if(data.status.role==="admin"||data.status.role==="moderator") {
+               if(decoded.status.role==="admin"||decoded.status.role==="moderator") {
 
                     tagModel.findByIdAndDelete(id)
                         .then(() => {
