@@ -21,7 +21,7 @@ var app = express();
 app.use(cors());
 
 //connect to mongoose
-mongoose.connect('mongodb://localhost/askme', {
+mongoose.connect('mongodb+srv://admin:admin@askme-fym5s.gcp.mongodb.net/test?retryWrites=true&w=majority', {
   useNewUrlParser: true,
   useCreateIndex: true,
   useFindAndModify: false
